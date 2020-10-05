@@ -1,6 +1,7 @@
 import glob
 import math
 import pandas as pd
+import seaborn as sns
 import matplotlib.pyplot as plt
 from time import strftime
 
@@ -14,17 +15,17 @@ class DataDescription:
     def __init__(self, dataframe):
         self.dataframe = dataframe
 
-    def my_describe():
-        describe = pd.DataFrame({'missingPerc': self.dataframe.isna().mean(),
-                                  'uniques': self.dataframe.nunique(),
-                                  '%uniquePerc': round((self.dataframe.nunique()/train.shape[0])*100,2),
-                                  'data_types': self.dataframe.dtypes,
-                                  'mean': round(self.dataframe.mean(),2),
-                                  'median': round(self.dataframe.median(),2),
-                                  'std': round(self.dataframe.std(),2),
-                                  'min': round(self.dataframe.min(),2),
-                                  'max': round(self.dataframe.max(),2)})
-        return describe
+    def my_describe(self):
+
+        return pd.DataFrame({'missingPerc': self.dataframe.isna().mean(),
+                             'uniques': self.dataframe.nunique(),
+                             '%uniquePerc': (self.dataframe.nunique()/self.dataframe.shape[0])*100,
+                             'data_types': self.dataframe.dtypes,
+                             'mean': self.dataframe.mean(),
+                             'median': self.dataframe.median(),
+                             'std': self.dataframe.std(),
+                             'min': self.dataframe.min(),
+                             'max': self.dataframe.max()})
 
 
 class CleanData:
@@ -33,7 +34,6 @@ class CleanData:
         self.df = df
 
     def merge_csv_folder(self, prefix, path, memory='no'):
-
         """
         Unir todos os csvs de uma determinada pasta.
 
@@ -43,7 +43,7 @@ class CleanData:
         """
         if path == '':
             path = input("Por favor digite o endereços dos arquivos?\n")
-        path = path.replace('\\','/')
+        path = path.replace('\\', '/')
         if path[:-1] != '/':
             path = path + '/'
 
@@ -56,9 +56,7 @@ class CleanData:
             return combined
         print('Feito')
 
-
     def header_cleaner(self):
-
         """
         Limpa os cabeçalhos do dataframe.
 
@@ -70,7 +68,6 @@ class CleanData:
         return trat2
 
     def split_columns(self, original, res1, res2, separator):
-
         """
         Divide uma coluna em duas.
 
@@ -84,9 +81,7 @@ class CleanData:
         return self.df
 
     def df_filter(self, cond):
-
-        """
-        Filtra df conforme determinada condição.
+        """ Filtra df conforme determinada condição.
 
         :df:   Dataframe
         :cond: Condição no qual haverá o filtro.
@@ -96,7 +91,55 @@ class CleanData:
 
 
 class EDA:
-    pass
+
+    def __init__(self, dataframe: pd.DataFrame):
+        self.dataframe = dataframe
+
+    def multi_histograms(self, variables: list) -> None:
+
+        """
+        Function to check for outliers visually through a boxplot
+
+        data: DataFrame
+
+        variable: list of numerical variables
+        """
+
+        # set of initial plot posistion
+        n = 1
+
+        plt.figure(figsize=(18, 10))
+        for column in self.dataframe[variables].columns:
+            plt.subplot(3, 3, n)
+            _ = sns.histplot(x=self.dataframe[column], bins=50)
+            n += 1
+
+        plt.subplots_adjust(hspace=0.3)
+
+        plt.show()
+
+    def multi_boxplots(self, variables: list) -> None:
+
+        """
+        Function to check for outliers visually through a boxplot
+
+        data: DataFrame
+
+        variable: list of numerical variables
+        """
+
+        # set of initial plot posistion
+        n = 1
+
+        plt.figure(figsize=(18, 10))
+        for column in self.dataframe[variables].columns:
+            plt.subplot(3, 3, n)
+            _ = sns.boxplot(x=column, data=self.dataframe)
+            n += 1
+
+        plt.subplots_adjust(hspace=0.3)
+
+        plt.show()
 
 
 class DataPreparation:
@@ -107,8 +150,22 @@ class ModelSelection:
     pass
 
 
-class ModelEvaluantion:
-    pass
+class ModelEvaluation:
+
+    def __init__(self, model, Xvalid, yvalid):
+        self.model = model
+        self.Xvalid = Xvalid
+        self.yvalid = yvalid
+
+    def confusion_matrix():
+        pass
+
+    def discrimination_threshold():
+        pass
+
+    def roc_curve(): # exemplaria
+        pass
+
 
 class StatsCalculations:
 
@@ -180,7 +237,6 @@ class StatsCalculations:
         interval_min = miu-z*(stdev/n**0.5)
         interval_max = miu+z*(stdev/n**0.5)
         return print(f'{interval_min} , {interval_max}')
-
 
     def corr_heatmap(self, df, method='pearson'):
 
